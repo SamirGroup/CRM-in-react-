@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   ComposedChart,
   Bar,
@@ -10,11 +11,23 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Wallet, ArrowDownToLine, ArrowUpFromLine, PiggyBank } from 'lucide-react';
+import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { StatCard } from '@/components/ui/StatCard';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/Table';
 import { ReportPageHeader } from '@/components/reports/ReportPageHeader';
+import { EditableNumberCell } from '@/components/reports/EditableNumberCell';
+import { EditableAmountListCard } from '@/components/reports/EditableAmountListCard';
 import { formatCurrency } from '@/lib/formatters';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useCashFlowDetailStore } from '@/store/useCashFlowDetailStore';
 
 const openingBalance = 620000000;
 
@@ -33,12 +46,20 @@ const flowWithBalance = monthlyFlow.map((m) => {
   return { ...m, balans: running };
 });
 
-const totalIn = monthlyFlow.reduce((sum, m) => sum + m.tushum, 0);
-const totalOut = monthlyFlow.reduce((sum, m) => sum + m.chiqim, 0);
-const closingBalance = openingBalance + totalIn - totalOut;
-
 export function CashFlowReportPage() {
   const { t } = useTranslation();
+  const { incomeItems, expenseItems, accountFlows, fetchDetail, updateIncomeAmount, updateExpenseAmount, updateAccountFlow } =
+    useCashFlowDetailStore();
+
+  useEffect(() => {
+    if (incomeItems.length === 0) fetchDetail();
+  }, [incomeItems.length, fetchDetail]);
+
+  const totalIn = incomeItems.reduce((sum, i) => sum + i.amount, 0);
+  const totalOut = expenseItems.reduce((sum, i) => sum + i.amount, 0);
+  const closingBalance = openingBalance + totalIn - totalOut;
+
+  const handleSaved = () => toast.success(t('common.saved'));
 
   return (
     <div>
@@ -51,7 +72,7 @@ export function CashFlowReportPage() {
         <StatCard title={t('cashflow.kpiClosing')} value={formatCurrency(closingBalance)} icon={PiggyBank} iconColor="var(--naf-accent)" />
       </div>
 
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle>{t('cashflow.chartTitle')}</CardTitle>
         </CardHeader>
@@ -95,6 +116,77 @@ export function CashFlowReportPage() {
               />
             </ComposedChart>
           </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Editable income / expense breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <EditableAmountListCard
+          title={t('cashflow.detail.incomeTitle')}
+          items={incomeItems}
+          onUpdate={updateIncomeAmount}
+          onSaved={handleSaved}
+          accent="success"
+        />
+        <EditableAmountListCard
+          title={t('cashflow.detail.expenseTitle')}
+          items={expenseItems}
+          onUpdate={updateExpenseAmount}
+          onSaved={handleSaved}
+          accent="danger"
+        />
+      </div>
+
+      {/* Net cash flow per account */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('cashflow.detail.netflowTitle')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">{t('cashflow.detail.colId')}</TableHead>
+                <TableHead>{t('cashflow.detail.colName')}</TableHead>
+                <TableHead className="text-right">{t('cashflow.detail.colIncome')}</TableHead>
+                <TableHead className="text-right">{t('cashflow.detail.colExpense')}</TableHead>
+                <TableHead className="text-right">{t('cashflow.detail.colDiff')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {accountFlows.map((row, index) => {
+                const diff = row.income - row.expense;
+                return (
+                  <TableRow key={row.id}>
+                    <TableCell className="text-[var(--naf-body-fg-muted)]">{index + 1}</TableCell>
+                    <TableCell className="font-medium">{row.name}</TableCell>
+                    <TableCell className="p-1">
+                      <EditableNumberCell
+                        value={row.income}
+                        onCommit={(v) => updateAccountFlow(row.id, 'income', v)}
+                        onSaved={handleSaved}
+                      />
+                    </TableCell>
+                    <TableCell className="p-1">
+                      <EditableNumberCell
+                        value={row.expense}
+                        onCommit={(v) => updateAccountFlow(row.id, 'expense', v)}
+                        onSaved={handleSaved}
+                      />
+                    </TableCell>
+                    <TableCell
+                      className={
+                        'text-right font-semibold ' +
+                        (diff >= 0 ? 'text-[var(--naf-status-confirmed-fg)]' : 'text-[var(--naf-danger)]')
+                      }
+                    >
+                      {formatCurrency(diff)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

@@ -1,15 +1,25 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RefreshCw, Filter } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/cn';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { Input } from '@/components/ui/Input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/Table';
 import { SummaryCard } from '@/components/dashboard/SummaryCard';
 import { useBranchesStore } from '@/store/useBranchesStore';
+import { useCashiersStore } from '@/store/useCashiersStore';
+import { useAccountsStore } from '@/store/useAccountsStore';
 import { formatCurrency } from '@/lib/formatters';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -17,10 +27,19 @@ const toDateInput = (date: Date) => date.toISOString().slice(0, 10);
 
 export function DashboardPage() {
   const branches = useBranchesStore((s) => s.branches);
+  const cashiers = useCashiersStore((s) => s.cashiers);
+  const fetchCashiers = useCashiersStore((s) => s.fetchCashiers);
+  const accounts = useAccountsStore((s) => s.accounts);
+  const fetchAccounts = useAccountsStore((s) => s.fetchAccounts);
   const [branchId, setBranchId] = useState('all');
   const [dateFrom, setDateFrom] = useState(() => toDateInput(new Date()));
   const [dateTo, setDateTo] = useState(() => toDateInput(new Date()));
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (cashiers.length === 0) fetchCashiers();
+    if (accounts.length === 0) fetchAccounts();
+  }, [cashiers.length, accounts.length, fetchCashiers, fetchAccounts]);
 
   const DASHBOARD_TABS = [
     { key: 'dashboard', label: t('dashboard.tabs.dashboard'), to: '/dashboard' },
@@ -205,6 +224,84 @@ export function DashboardPage() {
           rows={[{ label: t('common.amount'), value: formatCurrency(1050000) }]}
         />
       </div>
+
+      {/* Cashiers table */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>{t('dashboard.cashiers.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">{t('dashboard.cashiers.colId')}</TableHead>
+                <TableHead>{t('dashboard.cashiers.colAccount')}</TableHead>
+                <TableHead className="text-right">{t('dashboard.cashiers.colSales')}</TableHead>
+                <TableHead className="text-center">{t('dashboard.cashiers.colSalesCount')}</TableHead>
+                <TableHead className="text-right">{t('dashboard.cashiers.colAvgCheck')}</TableHead>
+                <TableHead className="text-right">{t('dashboard.cashiers.colCreditSales')}</TableHead>
+                <TableHead className="text-right">{t('dashboard.cashiers.colDiscount')}</TableHead>
+                <TableHead className="text-right">{t('dashboard.cashiers.colReturns')}</TableHead>
+                <TableHead className="text-right">{t('dashboard.cashiers.colIncome')}</TableHead>
+                <TableHead className="text-right">{t('dashboard.cashiers.colExpense')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {cashiers.map((row, index) => (
+                <TableRow key={row.id}>
+                  <TableCell className="text-[var(--naf-body-fg-muted)]">{index + 1}</TableCell>
+                  <TableCell className="font-medium">{row.account}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(row.sales)}</TableCell>
+                  <TableCell className="text-center">{row.salesCount}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(row.avgCheck)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(row.creditSales)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(row.discount)}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(row.returns)}</TableCell>
+                  <TableCell className="text-right text-[var(--naf-status-confirmed-fg)]">{formatCurrency(row.income)}</TableCell>
+                  <TableCell className="text-right text-[var(--naf-danger)]">{formatCurrency(row.expense)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      {/* Accounts table */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>{t('dashboard.accounts.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">{t('dashboard.accounts.colNum')}</TableHead>
+                <TableHead>{t('dashboard.accounts.colName')}</TableHead>
+                <TableHead className="text-right">{t('dashboard.accounts.colBalance')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {accounts.map((row, index) => (
+                <TableRow key={row.id}>
+                  <TableCell className="text-[var(--naf-body-fg-muted)]">{index + 1}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2 font-medium">
+                      <span
+                        className="naf-icon-chip h-8 w-8 shrink-0"
+                        style={{ '--chip-color': row.color } as React.CSSProperties}
+                      >
+                        <row.icon className="h-4 w-4" />
+                      </span>
+                      {row.name}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-semibold">{formatCurrency(row.balance)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
