@@ -12,6 +12,7 @@ import {
   Settings,
   Sun,
   Moon,
+  Building2,
 } from 'lucide-react';
 
 export interface NavLeaf {
@@ -60,13 +61,26 @@ export const NAV_ITEMS: NavEntry[] = [
       { to: '/mahsulot/ochirish', labelKey: 'nav.mahsulot.ochirish' },
     ],
   },
+  {
+    labelKey: 'nav.filiallar',
+    icon: 'building',
+    children: [
+      { to: '/filiallar/qoshish', labelKey: 'nav.filiallar.qoshish' },
+      { to: '/filiallar/boshqaruvi', labelKey: 'nav.filiallar.boshqaruvi' },
+      { to: '/filiallar/buxgalteriya', labelKey: 'nav.filiallar.buxgalteriyasi' },
+      { to: '/filiallar/kunlik-savdo', labelKey: 'nav.filiallar.kunlikSavdosi' },
+      { to: '/filiallar/aylanma', labelKey: 'nav.filiallar.aylanma' },
+      { to: '/filiallar/kirim', labelKey: 'nav.filiallar.kirim' },
+      { to: '/filiallar/chiqim', labelKey: 'nav.filiallar.chiqim' },
+      { to: '/filiallar/sotish', labelKey: 'nav.filiallar.sotish' },
+    ],
+  },
   { to: '/kontakt', labelKey: 'nav.kontakt', icon: 'users' },
   {
     labelKey: 'nav.sozlama',
     icon: 'settings',
     children: [
       { to: '/sozlama/akkauntlar', labelKey: 'nav.sozlama.akkauntlar' },
-      { to: '/sozlama/filiallar', labelKey: 'nav.sozlama.filiallar' },
       { to: '/sozlama/dastur', labelKey: 'nav.sozlama.dastur' },
       { to: '/sozlama/umumiy', labelKey: 'nav.sozlama.umumiy' },
     ],
@@ -83,6 +97,7 @@ export const ICONS: Record<string, LucideIcon> = {
   settings: Settings,
   sun: Sun,
   moon: Moon,
+  building: Building2,
 };
 
 export const ROLE_PERMISSIONS = {

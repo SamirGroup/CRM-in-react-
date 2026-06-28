@@ -29,6 +29,13 @@ export interface Branch {
   phone?: string;
   is_active: boolean;
   created_at: string;
+  directorName?: string;
+  directorPhone?: string;
+  inn?: string;
+  bankAccount?: string;
+  mfo?: string;
+  vatCode?: string;
+  agent?: string;
 }
 
 export interface Product {

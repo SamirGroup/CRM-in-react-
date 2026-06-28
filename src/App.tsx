@@ -17,6 +17,9 @@ import {
   Building2,
   UserCircle,
   Settings2,
+  Calculator,
+  ShoppingBag,
+  Repeat,
 } from 'lucide-react';
 import { Layout } from '@/components/layout/Layout';
 import { DashboardPage } from '@/pages/DashboardPage';
@@ -26,6 +29,7 @@ import { SalesPage } from '@/pages/SalesPage';
 import { HisobotPage } from '@/pages/HisobotPage';
 import { PlaceholderPage } from '@/pages/PlaceholderPage';
 import { GeneralSettingsPage } from '@/pages/GeneralSettingsPage';
+import { FilialQoshishPage } from '@/pages/FilialQoshishPage';
 import { PnLReportPage } from '@/pages/reports/PnLReportPage';
 import { CashFlowReportPage } from '@/pages/reports/CashFlowReportPage';
 import { CashFlowPlanReportPage } from '@/pages/reports/CashFlowPlanReportPage';
@@ -106,11 +110,20 @@ function App() {
             <Route path="mahsulot/narxlash" element={<PlaceholderPage titleKey="pages.narxlash" icon={Tag} />} />
             <Route path="mahsulot/ochirish" element={<PlaceholderPage titleKey="pages.royxatdanOchirish" icon={Trash2} />} />
 
+            {/* Филиаллар */}
+            <Route path="filiallar/qoshish" element={<FilialQoshishPage />} />
+            <Route path="filiallar/boshqaruvi" element={<PlaceholderPage titleKey="pages.filiallarBoshqaruvi" icon={Building2} />} />
+            <Route path="filiallar/buxgalteriya" element={<PlaceholderPage titleKey="pages.filiallarBuxgalteriyasi" icon={Calculator} />} />
+            <Route path="filiallar/kunlik-savdo" element={<PlaceholderPage titleKey="pages.filiallarKunlikSavdosi" icon={ShoppingBag} />} />
+            <Route path="filiallar/aylanma" element={<PlaceholderPage titleKey="pages.filiallarAylanma" icon={Repeat} />} />
+            <Route path="filiallar/kirim" element={<PlaceholderPage titleKey="pages.filiallarKirim" icon={PackagePlus} />} />
+            <Route path="filiallar/chiqim" element={<PlaceholderPage titleKey="pages.filiallarChiqim" icon={PackageMinus} />} />
+            <Route path="filiallar/sotish" element={<PlaceholderPage titleKey="pages.filiallarSotish" icon={ShoppingBag} />} />
+
             <Route path="kontakt" element={<PlaceholderPage titleKey="pages.kontakt" icon={Users} />} />
 
             {/* Созлама */}
             <Route path="sozlama/akkauntlar" element={<PlaceholderPage titleKey="pages.akkauntlar" icon={UserCircle} />} />
-            <Route path="sozlama/filiallar" element={<PlaceholderPage titleKey="pages.filiallar" icon={Building2} />} />
             <Route path="sozlama/dastur" element={<PlaceholderPage titleKey="pages.dasturSozlamalari" icon={Settings2} />} />
             <Route path="sozlama/umumiy" element={<GeneralSettingsPage />} />
           </Route>
