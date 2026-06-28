@@ -38,6 +38,30 @@ export interface Branch {
   agent?: string;
 }
 
+export interface MoliyaTransaction {
+  id: string;
+  type: 'income' | 'expense';
+  amount: number;
+  accountId: string;
+  accountName: string;
+  category: string;
+  contact?: string;
+  rate?: number;
+  date: string;
+  note?: string;
+  created_at: string;
+}
+
+export interface MoliyaPlan {
+  id: string;
+  type: 'income' | 'expense';
+  amount: number;
+  category: string;
+  period: string;
+  note?: string;
+  created_at: string;
+}
+
 export interface Product {
   id: string;
   name: string;

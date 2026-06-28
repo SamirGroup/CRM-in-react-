@@ -2,10 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'sonner';
 import {
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  TrendingUp,
-  TrendingDown,
   Wallet,
   RotateCcw,
   PackagePlus,
@@ -30,6 +26,10 @@ import { HisobotPage } from '@/pages/HisobotPage';
 import { PlaceholderPage } from '@/pages/PlaceholderPage';
 import { GeneralSettingsPage } from '@/pages/GeneralSettingsPage';
 import { FilialQoshishPage } from '@/pages/FilialQoshishPage';
+import { TushumPage } from '@/pages/moliya/TushumPage';
+import { ChiqimPage } from '@/pages/moliya/ChiqimPage';
+import { TushumRejaPage } from '@/pages/moliya/TushumRejaPage';
+import { ChiqimRejaPage } from '@/pages/moliya/ChiqimRejaPage';
 import { PnLReportPage } from '@/pages/reports/PnLReportPage';
 import { CashFlowReportPage } from '@/pages/reports/CashFlowReportPage';
 import { CashFlowPlanReportPage } from '@/pages/reports/CashFlowPlanReportPage';
@@ -92,10 +92,10 @@ function App() {
             <Route path="hisobot/abc-brend" element={<AbcBrandsPage />} />
 
             {/* Маблағ */}
-            <Route path="moliya/tushum" element={<PlaceholderPage titleKey="nav.moliya.tushum" icon={ArrowDownToLine} />} />
-            <Route path="moliya/chiqim" element={<PlaceholderPage titleKey="nav.moliya.chiqim" icon={ArrowUpFromLine} />} />
-            <Route path="moliya/tushum-reja" element={<PlaceholderPage titleKey="pages.tushumReja" icon={TrendingUp} />} />
-            <Route path="moliya/chiqim-reja" element={<PlaceholderPage titleKey="pages.chiqimReja" icon={TrendingDown} />} />
+            <Route path="moliya/tushum" element={<TushumPage />} />
+            <Route path="moliya/chiqim" element={<ChiqimPage />} />
+            <Route path="moliya/tushum-reja" element={<TushumRejaPage />} />
+            <Route path="moliya/chiqim-reja" element={<ChiqimRejaPage />} />
             <Route path="moliya/hisob" element={<PlaceholderPage titleKey="pages.hisob" icon={Wallet} />} />
 
             {/* Сотув */}
