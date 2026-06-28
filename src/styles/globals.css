@@ -1,0 +1,407 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONDOR CRM — DESIGN TOKENS
+   Barcha ranglar, soyalar, radius'lar --naf-* prefiksi bilan
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── SIRTULAR (SURFACES) ──────────────────────────────────────────────── */
+  --naf-page-bg: #eef2f6;
+  --naf-raised-bg: #ffffff;
+  --naf-chrome-bg: #f8fafc;
+  --naf-float-bg: #ffffff;
+
+  /* ─── MATN (TEXT) ──────────────────────────────────────────────────────── */
+  --naf-body-fg: #1e293b;
+  --naf-body-fg-muted: #64748b;
+  --naf-body-fg-faint: #94a3b8;
+
+  /* ─── BREND AKSSENT (ORANGE #f97316) ───────────────────────────────────── */
+  --naf-accent: #f97316;
+  --naf-accent-hover: #ea580c;
+  --naf-accent-soft: #ffedd5;
+  --naf-accent-border: #fdba74;
+
+  /* ─── CHEGARA / SOYA (BORDERS / SHADOWS) ──────────────────────────────── */
+  --naf-border-subtle: #e2e8f0;
+  --naf-panel-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --naf-panel-shadow-hover: 0 12px 24px -8px rgba(0, 0, 0, 0.14), 0 4px 8px -4px rgba(0, 0, 0, 0.08);
+  --naf-popover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* ─── STATUSLAR ────────────────────────────────────────────────────────── */
+  --naf-status-pending-bg: #fef3c7;
+  --naf-status-pending-border: #fcd34d;
+  --naf-status-pending-fg: #92400e;
+  --naf-status-confirmed-bg: #dcfce7;
+  --naf-status-confirmed-border: #86efac;
+  --naf-status-confirmed-fg: #166534;
+  --naf-status-rejected-bg: #fee2e2;
+  --naf-status-rejected-border: #fca5a5;
+  --naf-status-rejected-fg: #991b1b;
+
+  /* ─── BADGE / CHIP ─────────────────────────────────────────────────────── */
+  --naf-badge-neutral-bg: #f1f5f9;
+  --naf-badge-neutral-border: #e2e8f0;
+  --naf-badge-neutral-fg: #475569;
+  --naf-badge-info-bg: #dbeafe;
+  --naf-badge-info-border: #93c5fd;
+  --naf-badge-info-fg: #1e40af;
+  --naf-badge-success-bg: #dcfce7;
+  --naf-badge-success-border: #86efac;
+  --naf-badge-success-fg: #166534;
+  --naf-badge-warning-bg: #fef3c7;
+  --naf-badge-warning-border: #fcd34d;
+  --naf-badge-warning-fg: #92400e;
+  --naf-badge-danger-bg: #fee2e2;
+  --naf-badge-danger-border: #fca5a5;
+  --naf-badge-danger-fg: #991b1b;
+  --naf-badge-accent-bg: #ffedd5;
+  --naf-badge-accent-border: #fdba74;
+  --naf-badge-accent-fg: #9a3412;
+
+  /* ─── ALERT / CALLOUT ──────────────────────────────────────────────────── */
+  --naf-alert-danger-bg: #fef2f2;
+  --naf-alert-danger-border: #fecaca;
+  --naf-alert-danger-fg: #991b1b;
+  --naf-alert-warning-bg: #fffbeb;
+  --naf-alert-warning-border: #fde68a;
+  --naf-alert-warning-fg: #92400e;
+  --naf-callout-warning-bg: #fffbeb;
+  --naf-callout-warning-border: #fcd34d;
+  --naf-callout-warning-fg: #78350f;
+
+  /* ─── GRAFIK / PROGRESS ────────────────────────────────────────────────── */
+  --naf-chart-grid: #e2e8f0;
+  --naf-progress-track: #e2e8f0;
+  --naf-chart-brush-bg: #f1f5f9;
+  --naf-chart-brush-border: #cbd5e1;
+
+  /* ─── INVENTAR / ANALITIKA ─────────────────────────────────────────────── */
+  --inv-well-bg: #f8fafc;
+  --inv-chip-bg: #e2e8f0;
+
+  /* ─── XAVF / DANGER (solid harakat ranglari — tugma, input chegarasi) ──── */
+  --naf-danger: #dc2626;
+  --naf-danger-hover: #b91c1c;
+  --naf-danger-border: #fca5a5;
+
+  /* ─── GRAFIK SERIYALARI (recharts ko'p qatorli diagrammalar uchun) ────── */
+  --naf-chart-series-1: var(--naf-accent);
+  --naf-chart-series-2: #3b82f6;
+  --naf-chart-series-3: #8b5cf6;
+  --naf-chart-series-4: #22c55e;
+  --naf-chart-series-5: #64748b;
+
+  /* ─── LEGACY ALIAS'LAR (moslik uchun) ──────────────────────────────────── */
+  --text-primary: var(--naf-body-fg);
+  --text-secondary: var(--naf-body-fg-muted);
+  --bg-card: var(--naf-raised-bg);
+  --bg-page: var(--naf-page-bg);
+  --accent: var(--naf-accent);
+  --danger: var(--naf-danger);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DARK THEME
+   ───────────────────────────────────────────────────────────────────────────── */
+.dark {
+  /* ─── SIRTULAR ─────────────────────────────────────────────────────────── */
+  --naf-page-bg: #141719;
+  --naf-raised-bg: #1e2327;
+  --naf-chrome-bg: #1a1f24;
+  --naf-float-bg: #272d32;
+
+  /* ─── MATN ─────────────────────────────────────────────────────────────── */
+  --naf-body-fg: #e2e8f0;
+  --naf-body-fg-muted: #94a3b8;
+  --naf-body-fg-faint: #64748b;
+
+  /* ─── BREND AKSSENT ────────────────────────────────────────────────────── */
+  --naf-accent: #f97316;
+  --naf-accent-hover: #fb923c;
+  --naf-accent-soft: #7c2d12;
+  --naf-accent-border: #9a3412;
+
+  /* ─── CHEGARA / SOYA ───────────────────────────────────────────────────── */
+  --naf-border-subtle: #334155;
+  --naf-panel-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --naf-panel-shadow-hover: 0 12px 24px -8px rgba(0, 0, 0, 0.5), 0 4px 8px -4px rgba(0, 0, 0, 0.3);
+  --naf-popover-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+
+  /* ─── STATUSLAR ────────────────────────────────────────────────────────── */
+  --naf-status-pending-bg: #78350f;
+  --naf-status-pending-border: #92400e;
+  --naf-status-pending-fg: #fef3c7;
+  --naf-status-confirmed-bg: #166534;
+  --naf-status-confirmed-border: #14532d;
+  --naf-status-confirmed-fg: #dcfce7;
+  --naf-status-rejected-bg: #991b1b;
+  --naf-status-rejected-border: #7f1d1d;
+  --naf-status-rejected-fg: #fee2e2;
+
+  /* ─── BADGE / CHIP ─────────────────────────────────────────────────────── */
+  --naf-badge-neutral-bg: #334155;
+  --naf-badge-neutral-border: #475569;
+  --naf-badge-neutral-fg: #e2e8f0;
+  --naf-badge-info-bg: #1e3a5f;
+  --naf-badge-info-border: #1e40af;
+  --naf-badge-info-fg: #dbeafe;
+  --naf-badge-success-bg: #166534;
+  --naf-badge-success-border: #14532d;
+  --naf-badge-success-fg: #dcfce7;
+  --naf-badge-warning-bg: #78350f;
+  --naf-badge-warning-border: #92400e;
+  --naf-badge-warning-fg: #fef3c7;
+  --naf-badge-danger-bg: #991b1b;
+  --naf-badge-danger-border: #7f1d1d;
+  --naf-badge-danger-fg: #fee2e2;
+  --naf-badge-accent-bg: #7c2d12;
+  --naf-badge-accent-border: #9a3412;
+  --naf-badge-accent-fg: #ffedd5;
+
+  /* ─── ALERT / CALLOUT ──────────────────────────────────────────────────── */
+  --naf-alert-danger-bg: #7f1d1d;
+  --naf-alert-danger-border: #991b1b;
+  --naf-alert-danger-fg: #fee2e2;
+  --naf-alert-warning-bg: #78350f;
+  --naf-alert-warning-border: #92400e;
+  --naf-alert-warning-fg: #fef3c7;
+  --naf-callout-warning-bg: #78350f;
+  --naf-callout-warning-border: #92400e;
+  --naf-callout-warning-fg: #fef3c7;
+
+  /* ─── GRAFIK / PROGRESS ────────────────────────────────────────────────── */
+  --naf-chart-grid: #334155;
+  --naf-progress-track: #334155;
+  --naf-chart-brush-bg: #1e293b;
+  --naf-chart-brush-border: #475569;
+
+  /* ─── INVENTAR / ANALITIKA ─────────────────────────────────────────────── */
+  --inv-well-bg: #1a1f24;
+  --inv-chip-bg: #334155;
+
+  /* ─── XAVF / DANGER ────────────────────────────────────────────────────── */
+  --naf-danger: #ef4444;
+  --naf-danger-hover: #f87171;
+  --naf-danger-border: #7f1d1d;
+
+  /* ─── GRAFIK SERIYALARI ────────────────────────────────────────────────── */
+  --naf-chart-series-1: var(--naf-accent);
+  --naf-chart-series-2: #60a5fa;
+  --naf-chart-series-3: #a78bfa;
+  --naf-chart-series-4: #4ade80;
+  --naf-chart-series-5: #94a3b8;
+
+  /* ─── LEGACY ALIAS'LAR ─────────────────────────────────────────────────── */
+  --text-primary: var(--naf-body-fg);
+  --text-secondary: var(--naf-body-fg-muted);
+  --bg-card: var(--naf-raised-bg);
+  --bg-page: var(--naf-page-bg);
+  --accent: var(--naf-accent);
+  --danger: var(--naf-danger);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MOBIL DARK REJM UCHUN MAXSUS OVERRIDE'LAR
+   ───────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .dark {
+    --naf-body-fg: #f1f5f9;
+    --naf-body-fg-muted: #cbd5e1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   YORDAMCHI UTIL-KLASSLAR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── SIRTULAR ───────────────────────────────────────────────────────────── */
+.naf-surface-raised {
+  background-color: var(--naf-raised-bg);
+  box-shadow: var(--naf-panel-shadow);
+  border-radius: 0.75rem;
+  border: 1px solid var(--naf-border-subtle);
+}
+
+.naf-panel-flat {
+  background-color: var(--naf-raised-bg);
+  border: 1px solid var(--naf-border-subtle);
+  border-radius: 0.5rem;
+}
+
+.naf-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.naf-card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--naf-panel-shadow-hover);
+}
+
+.naf-icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.875rem;
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--chip-color, var(--naf-accent)) 22%, transparent), color-mix(in srgb, var(--chip-color, var(--naf-accent)) 8%, transparent));
+  color: var(--chip-color, var(--naf-accent));
+}
+
+.naf-toolbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background-color: var(--inv-chip-bg);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--naf-body-fg);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.naf-toolbar-chip:hover {
+  background-color: var(--naf-border-subtle);
+}
+
+.naf-toolbar-chip.active {
+  background-color: var(--naf-accent-soft);
+  color: var(--naf-accent);
+}
+
+/* ─── INVENTAR QATLAMLARI ────────────────────────────────────────────────── */
+.inv-card {
+  background-color: var(--naf-raised-bg);
+  border: 1px solid var(--naf-border-subtle);
+  border-radius: 0.75rem;
+  box-shadow: var(--naf-panel-shadow);
+}
+
+.inv-card-flat {
+  background-color: var(--naf-raised-bg);
+  border: 1px solid var(--naf-border-subtle);
+  border-radius: 0.5rem;
+}
+
+.inv-well {
+  background-color: var(--inv-well-bg);
+  border: 1px solid var(--naf-border-subtle);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.inv-progress-track {
+  background-color: var(--naf-progress-track);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.inv-chip-inactive {
+  background-color: var(--inv-chip-bg);
+  color: var(--naf-body-fg-muted);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────────────────── */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--naf-border-subtle) transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--naf-border-subtle);
+  border-radius: 9999px;
+}
+
+/* ─── ANIMATSIYALAR ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .naf-animate-backdrop {
+    animation: backdropFadeIn 0.2s ease-out;
+  }
+
+  .naf-animate-panel {
+    animation: panelSlideUp 0.3s ease-out;
+  }
+
+  .naf-animate-drawer {
+    animation: drawerSlideIn 0.3s ease-out;
+  }
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes panelSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes drawerSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* ─── GLOBAL BODY STYLES ─────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--naf-page-bg);
+  color: var(--naf-body-fg);
+  line-height: 1.5;
+}
+
+/* ─── FOCUS STYLES ───────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--naf-accent);
+  outline-offset: 2px;
+}
+
+/* ─── SELECTION ──────────────────────────────────────────────────────────── */
+::selection {
+  background-color: var(--naf-accent-soft);
+  color: var(--naf-accent);
+}
