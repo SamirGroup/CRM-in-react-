@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { cn } from '@/lib/cn';
 import {
   Table,
   TableBody,
@@ -13,7 +15,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/Table';
-import { Search, Plus, Filter, ArrowUpDown, Package, AlertTriangle } from 'lucide-react';
+import {
+  Search,
+  Plus,
+  Filter,
+  ArrowUpDown,
+  Package,
+  AlertTriangle,
+  Pencil,
+  Printer,
+  Pause,
+  Play,
+  Trash2,
+  RotateCcw,
+} from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { formatCurrency } from '@/lib/formatters';
 import { useTranslation } from '@/hooks/useTranslation';
@@ -23,26 +38,47 @@ interface Product {
   name: string;
   sku: string;
   category: string;
+  brand: string;
+  unit: string;
   quantity: number;
   minQuantity: number;
-  price: number;
+  costPrice: number;
+  sellPrice: number;
   status: 'in_stock' | 'low_stock' | 'out_of_stock';
+  lifecycle: 'active' | 'inactive' | 'deleted';
 }
 
-const mockProducts: Product[] = [
-  { id: '1', name: 'iPhone 15 Pro', sku: 'IPH-15-PRO', category: 'Telefonlar', quantity: 45, minQuantity: 10, price: 15000000, status: 'in_stock' },
-  { id: '2', name: 'Samsung S24 Ultra', sku: 'SAM-S24-U', category: 'Telefonlar', quantity: 8, minQuantity: 10, price: 14000000, status: 'low_stock' },
-  { id: '3', name: 'MacBook Air M3', sku: 'MBA-M3', category: 'Noutbuklar', quantity: 22, minQuantity: 5, price: 12500000, status: 'in_stock' },
-  { id: '4', name: 'AirPods Pro 2', sku: 'APP-2', category: 'Quloqchinlar', quantity: 0, minQuantity: 15, price: 3000000, status: 'out_of_stock' },
-  { id: '5', name: 'iPad Air 5', sku: 'IPA-5', category: 'Planshetlar', quantity: 18, minQuantity: 8, price: 6500000, status: 'in_stock' },
+const initialProducts: Product[] = [
+  { id: '1', name: 'iPhone 15 Pro', sku: 'IPH-15-PRO', category: 'Telefonlar', brand: 'Apple', unit: 'та', quantity: 45, minQuantity: 10, costPrice: 13200000, sellPrice: 15000000, status: 'in_stock', lifecycle: 'active' },
+  { id: '2', name: 'Samsung S24 Ultra', sku: 'SAM-S24-U', category: 'Telefonlar', brand: 'Samsung', unit: 'та', quantity: 8, minQuantity: 10, costPrice: 12300000, sellPrice: 14000000, status: 'low_stock', lifecycle: 'active' },
+  { id: '3', name: 'MacBook Air M3', sku: 'MBA-M3', category: 'Noutbuklar', brand: 'Apple', unit: 'та', quantity: 22, minQuantity: 5, costPrice: 11000000, sellPrice: 12500000, status: 'in_stock', lifecycle: 'active' },
+  { id: '4', name: 'AirPods Pro 2', sku: 'APP-2', category: 'Quloqchinlar', brand: 'Apple', unit: 'та', quantity: 0, minQuantity: 15, costPrice: 2600000, sellPrice: 3000000, status: 'out_of_stock', lifecycle: 'active' },
+  { id: '5', name: 'iPad Air 5', sku: 'IPA-5', category: 'Planshetlar', brand: 'Apple', unit: 'та', quantity: 18, minQuantity: 8, costPrice: 5700000, sellPrice: 6500000, status: 'in_stock', lifecycle: 'active' },
+  { id: '6', name: 'Xiaomi Redmi Pad SE', sku: 'XMI-PAD-SE', category: 'Planshetlar', brand: 'Xiaomi', unit: 'та', quantity: 3, minQuantity: 8, costPrice: 3100000, sellPrice: 3600000, status: 'low_stock', lifecycle: 'inactive' },
+  { id: '7', name: 'JBL Tune 510BT', sku: 'JBL-510BT', category: 'Quloqchinlar', brand: 'JBL', unit: 'та', quantity: 12, minQuantity: 10, costPrice: 480000, sellPrice: 650000, status: 'in_stock', lifecycle: 'deleted' },
 ];
 
+type TabKey = 'all' | 'available' | 'low' | 'out' | 'scale' | 'inactive' | 'deleted' | 'barcodes';
+
 export function InventoryPage() {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [tab, setTab] = useState<TabKey>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const debouncedSearch = useDebounce(searchQuery, 300);
   const [sortField, setSortField] = useState<keyof Product>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { t } = useTranslation();
+
+  const TABS: { key: TabKey; label: string }[] = [
+    { key: 'all', label: t('inventory.tabs.all') },
+    { key: 'available', label: t('inventory.tabs.available') },
+    { key: 'low', label: t('inventory.tabs.low') },
+    { key: 'out', label: t('inventory.tabs.out') },
+    { key: 'scale', label: t('inventory.tabs.scale') },
+    { key: 'inactive', label: t('inventory.tabs.inactive') },
+    { key: 'deleted', label: t('inventory.tabs.deleted') },
+    { key: 'barcodes', label: t('inventory.tabs.barcodes') },
+  ];
 
   const getStatusBadge = (status: Product['status']) => {
     switch (status) {
@@ -55,7 +91,29 @@ export function InventoryPage() {
     }
   };
 
-  const filteredProducts = mockProducts.filter((product) =>
+  const activeProducts = products.filter((p) => p.lifecycle === 'active');
+
+  const tabFiltered = products.filter((p) => {
+    switch (tab) {
+      case 'available':
+        return p.lifecycle === 'active' && p.status === 'in_stock';
+      case 'low':
+        return p.lifecycle === 'active' && p.status === 'low_stock';
+      case 'out':
+        return p.lifecycle === 'active' && p.status === 'out_of_stock';
+      case 'inactive':
+        return p.lifecycle === 'inactive';
+      case 'deleted':
+        return p.lifecycle === 'deleted';
+      case 'scale':
+      case 'barcodes':
+        return false;
+      default:
+        return p.lifecycle !== 'deleted';
+    }
+  });
+
+  const filteredProducts = tabFiltered.filter((product) =>
     product.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
     product.sku.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
@@ -84,11 +142,21 @@ export function InventoryPage() {
   });
 
   const stats = {
-    total: mockProducts.length,
-    inStock: mockProducts.filter(p => p.status === 'in_stock').length,
-    lowStock: mockProducts.filter(p => p.status === 'low_stock').length,
-    outOfStock: mockProducts.filter(p => p.status === 'out_of_stock').length,
-    totalValue: mockProducts.reduce((sum, p) => sum + p.price * p.quantity, 0),
+    total: activeProducts.length,
+    inStock: activeProducts.filter((p) => p.status === 'in_stock').length,
+    lowStock: activeProducts.filter((p) => p.status === 'low_stock').length,
+    outOfStock: activeProducts.filter((p) => p.status === 'out_of_stock').length,
+    totalValue: activeProducts.reduce((sum, p) => sum + p.sellPrice * p.quantity, 0),
+  };
+
+  const toggleLifecycle = (product: Product, lifecycle: Product['lifecycle']) => {
+    setProducts((prev) => prev.map((p) => (p.id === product.id ? { ...p, lifecycle } : p)));
+    const toastKey =
+      lifecycle === 'inactive' ? 'inventory.toastDeactivated'
+      : lifecycle === 'deleted' ? 'inventory.toastDeleted'
+      : lifecycle === 'active' && product.lifecycle === 'inactive' ? 'inventory.toastActivated'
+      : 'inventory.toastRestored';
+    toast.success(t(toastKey));
   };
 
   return (
@@ -169,6 +237,25 @@ export function InventoryPage() {
         </Card>
       </div>
 
+      {/* Status tabs */}
+      <div className="flex gap-1 border-b border-[var(--naf-border-subtle)] mb-6 overflow-x-auto">
+        {TABS.map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            onClick={() => setTab(item.key)}
+            className={cn(
+              'px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-colors',
+              tab === item.key
+                ? 'border-[var(--naf-accent)] text-[var(--naf-accent)]'
+                : 'border-transparent text-[var(--naf-body-fg-muted)] hover:text-[var(--naf-body-fg)]'
+            )}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
       {/* Filters */}
       <Card className="mb-6">
         <CardContent className="p-4">
@@ -212,43 +299,91 @@ export function InventoryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-20">{t('inventory.colSku')}</TableHead>
+                  <TableHead className="w-10">#</TableHead>
                   <TableHead onClick={() => handleSort('name')} className="cursor-pointer">
                     {t('inventory.colName')} {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
-                  </TableHead>
-                  <TableHead onClick={() => handleSort('category')} className="cursor-pointer">
-                    {t('inventory.colCategory')} {sortField === 'category' && (sortDirection === 'asc' ? '↑' : '↓')}
-                  </TableHead>
-                  <TableHead onClick={() => handleSort('price')} className="cursor-pointer text-right">
-                    {t('inventory.colPrice')} {sortField === 'price' && (sortDirection === 'asc' ? '↑' : '↓')}
                   </TableHead>
                   <TableHead onClick={() => handleSort('quantity')} className="cursor-pointer text-center">
                     {t('inventory.colQty')} {sortField === 'quantity' && (sortDirection === 'asc' ? '↑' : '↓')}
                   </TableHead>
+                  <TableHead className="text-center">{t('inventory.colUnit')}</TableHead>
+                  <TableHead onClick={() => handleSort('sellPrice')} className="cursor-pointer text-right">
+                    {t('inventory.colPrice')} {sortField === 'sellPrice' && (sortDirection === 'asc' ? '↑' : '↓')}
+                  </TableHead>
+                  <TableHead className="text-right">{t('inventory.colCostSum')}</TableHead>
+                  <TableHead className="text-right">{t('inventory.colExpectedProfit')}</TableHead>
                   <TableHead className="text-center">{t('inventory.colStatus')}</TableHead>
                   <TableHead className="text-right">{t('inventory.colActions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sortedProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-mono text-sm">{product.sku}</TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>{product.category}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(product.price)}</TableCell>
-                    <TableCell className="text-center">
-                      <span className={product.quantity <= product.minQuantity ? 'text-[var(--naf-badge-danger-fg)] font-medium' : ''}>
-                        {product.quantity} {t('inventory.qtyUnit')}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-center">{getStatusBadge(product.status)}</TableCell>
-                    <TableCell className="text-right">
-                      <Button variant="ghost" size="sm">
-                        {t('common.edit')}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {sortedProducts.map((product, index) => {
+                  const costSum = product.costPrice * product.quantity;
+                  const expectedProfit = (product.sellPrice - product.costPrice) * product.quantity;
+                  return (
+                    <TableRow key={product.id}>
+                      <TableCell className="text-[var(--naf-body-fg-muted)]">{index + 1}</TableCell>
+                      <TableCell>
+                        <div className="font-medium text-[var(--naf-body-fg)]">{product.name}</div>
+                        <div className="flex gap-1.5 mt-1">
+                          <Badge variant="neutral">{product.category}</Badge>
+                          <Badge variant="info">{product.brand}</Badge>
+                        </div>
+                        <div className="text-xs text-[var(--naf-body-fg-muted)] font-mono mt-1">{product.sku}</div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className={product.quantity <= product.minQuantity ? 'text-[var(--naf-badge-danger-fg)] font-medium' : ''}>
+                          {product.quantity}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center text-[var(--naf-body-fg-muted)]">{product.unit}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="text-xs text-[var(--naf-body-fg-muted)]">{formatCurrency(product.costPrice)}</div>
+                        <div className="font-medium">{formatCurrency(product.sellPrice)}</div>
+                      </TableCell>
+                      <TableCell className="text-right">{formatCurrency(costSum)}</TableCell>
+                      <TableCell className="text-right text-[var(--naf-status-confirmed-fg)] font-medium">
+                        {formatCurrency(expectedProfit)}
+                      </TableCell>
+                      <TableCell className="text-center">{getStatusBadge(product.status)}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => toast.success(t('inventory.toastEditSoon'))} title={t('inventory.actionEdit')}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => toast.success(t('inventory.toastPrintSoon'))} title={t('inventory.actionPrint')}>
+                            <Printer className="h-4 w-4" />
+                          </Button>
+                          {product.lifecycle === 'deleted' ? (
+                            <Button variant="ghost" size="icon" onClick={() => toggleLifecycle(product, 'active')} title={t('inventory.actionRestore')}>
+                              <RotateCcw className="h-4 w-4" />
+                            </Button>
+                          ) : (
+                            <>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => toggleLifecycle(product, product.lifecycle === 'inactive' ? 'active' : 'inactive')}
+                                title={product.lifecycle === 'inactive' ? t('inventory.actionActivate') : t('inventory.actionDeactivate')}
+                              >
+                                {product.lifecycle === 'inactive' ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-[var(--naf-danger)] hover:text-[var(--naf-danger-hover)]"
+                                onClick={() => toggleLifecycle(product, 'deleted')}
+                                title={t('inventory.actionDelete')}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}
